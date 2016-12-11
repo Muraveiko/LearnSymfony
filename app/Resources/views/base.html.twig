@@ -28,7 +28,7 @@
                     <div class="container">
                         <div class="navbar-header">
                             <a class="navbar-brand" href="{{ path('homepage') }}">
-                                Symfony Demo
+                                {{ 'title.homepage'|trans|raw }}
                             </a>
 
                             <button type="button" class="navbar-toggle"
@@ -44,11 +44,6 @@
                             <ul class="nav navbar-nav navbar-right">
 
                                 {% block header_navigation_links %}
-                                    <li>
-                                        <a href="#">
-                                            <i class="fa fa-home" aria-hidden="true"></i> {{ 'menu.homepage'|trans }}
-                                        </a>
-                                    </li>
 
                                     {% if is_granted('ROLE_ADMIN') %}
                                         <li>
@@ -60,6 +55,11 @@
                                 {% endblock %}
 
                                 {% if app.user %}
+                                    <li>
+                                        <a href="#">
+                                            <i class="fa fa-plus" aria-hidden="true"></i> {{ 'menu.addbook'|trans }}
+                                        </a>
+                                    </li>
                                     <li>
                                         <a href="{{ path('fos_user_security_logout') }}">
                                             <i class="fa fa-sign-out" aria-hidden="true"></i> {{ 'menu.logout'|trans }}

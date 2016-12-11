@@ -58,7 +58,7 @@
 
             <trans-unit id="title.homepage">
                 <source>title.homepage</source>
-                <target><![CDATA[Добро пожаловать в <strong>Symfony Demo</strong> приложение]]></target>
+                <target><![CDATA[Моя <strong>Библиотечка</strong>]]></target>
             </trans-unit>
             <trans-unit id="title.source_code">
                 <source>title.source_code</source>
@@ -239,9 +239,17 @@
                 <source>menu.admin</source>
                 <target>Панель управления</target>
             </trans-unit>
+            <trans-unit id="menu.login">
+                <source>menu.login</source>
+                <target>Войти</target>
+            </trans-unit>
             <trans-unit id="menu.logout">
                 <source>menu.logout</source>
                 <target>Выйти</target>
+            </trans-unit>
+            <trans-unit id="menu.addbook">
+                <source>menu.addbook</source>
+                <target>Книгу</target>
             </trans-unit>
 
             <trans-unit id="post.to_publish_a_comment">

@@ -12,7 +12,6 @@
 namespace AppBundle\DataFixtures\ORM;
 
 use AppBundle\Entity\Book;
-use AppBundle\Entity\User;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -28,22 +27,25 @@ class LoadFixtures implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $manager)
     {
-        $this->loadUsers($manager);
+        $this->loadUsers();
         $this->loadBooks($manager);
     }
 
-    private function loadUsers(ObjectManager $manager)
+    private function loadUsers()
     {
-        $passwordEncoder = $this->container->get('security.password_encoder');
+        // Get our userManager, you must implement `ContainerAwareInterface`
+        $userManager = $this->container->get('fos_user.user_manager');
 
-        $johnUser = new User();
-        $johnUser->setUsername('user');
-        $johnUser->setEmail('john_user@symfony.com');
-        $encodedPassword = $passwordEncoder->encodePassword($johnUser, 'user');
-        $johnUser->setPassword($encodedPassword);
-        $manager->persist($johnUser);
+        // Create our user and set details
+        $user = $userManager->createUser();
+        $user->setUsername('user');
+        $user->setEmail('test@domain.com');
+        $user->setPlainPassword('user');
+        $user->setEnabled(true);
+        $user->setRoles(array('ROLE_ADMIN'));
 
-        $manager->flush();
+        // Update the user
+        $userManager->updateUser($user, true);
     }
 
     private function loadBooks(ObjectManager $manager)
@@ -56,7 +58,7 @@ class LoadFixtures implements FixtureInterface, ContainerAwareInterface
             $book->setCover('');
             $book->setFilename('');
             $book->setAllowedDownload(FALSE);
-            $book->setDateRead(new \DateTime('now'));
+            $book->setDateRead(new \DateTime('now - '.$i.'days'));
 
             $manager->persist($book);
         }

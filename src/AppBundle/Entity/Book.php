@@ -217,5 +217,6 @@ class Book
     {
         return $this->allowedDownload;
     }
+
 }
 

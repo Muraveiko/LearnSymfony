@@ -8,9 +8,24 @@
 #}
 
 {% block body %}
-    <div class="page-header">
-        <h1>{{ 'title.homepage'|trans|raw }}</h1>
-    </div>
+    {% for book in books %}
+        <article class="post">
+            <h2>{{ book.name }}</h2>
+            <h3>{{ book.author }}</h3>
+            <p>Здесь потом будет картинка</p>
+            {{ book.dateRead|localizeddate('medium', 'none') }}
+            <p>
+            {%  if book.allowedDownload %}
+             <a href="#" class="btn btn-default"><i class="fa fa-cloud-download"></i></a>
+            {% endif %}
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="#" class="btn btn-primary"><i class="fa fa-edit"></i></a>
+            {% endif %}
+            </p>
+        </article>
+    {% else %}
+        <div class="well">{{ 'post.no_posts_found'|trans }}</div>
+    {% endfor %}
 
     
 {% endblock %}

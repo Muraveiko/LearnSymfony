@@ -10,4 +10,13 @@ namespace AppBundle\Repository;
  */
 class BookRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getList()
+    {
+        $query = $this->createQueryBuilder('p')
+            ->orderBy('p.dateRead', 'DESC')
+            ->getQuery();
+
+        return $query->getResult();
+    }
+
 }

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body_id 'addform' %}
+
+{% block main %}
+    <h1>Добавление новой книги</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+{% endblock %}

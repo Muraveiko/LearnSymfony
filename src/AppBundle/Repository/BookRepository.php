@@ -1,6 +1,8 @@
 <?php
 
 namespace AppBundle\Repository;
+use AppBundle\Entity\Book;
+
 
 /**
  * BookRepository
@@ -10,13 +12,17 @@ namespace AppBundle\Repository;
  */
 class BookRepository extends \Doctrine\ORM\EntityRepository
 {
+
     public function getList()
     {
         $query = $this->createQueryBuilder('p')
             ->orderBy('p.dateRead', 'DESC')
             ->getQuery();
 
+        $query->useResultCache(true, 86400,'book_get_list');
+
         return $query->getResult();
     }
+
 
 }

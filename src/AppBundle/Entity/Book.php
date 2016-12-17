@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Book
  *
- * @ORM\Table(name="book")
+ * @ORM\Table(name="book",indexes={@ORM\Index(name="date_read_idx", columns={"date_read"})})
  * @ORM\Entity(repositoryClass="AppBundle\Repository\BookRepository")
  */
 class Book

@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Book
@@ -39,6 +40,7 @@ class Book
      * @var string
      *
      * @ORM\Column(name="cover", type="string", length=45)
+     * @Assert\File(mimeTypes={ "image/jpeg","image/png"})
      */
     private $cover;
 
@@ -46,6 +48,7 @@ class Book
      * @var string
      *
      * @ORM\Column(name="filename", type="string", length=255)
+     * @Assert\File(mimeTypes={ "application/pdf","application/epub+zip","application/rtf","text/rtf","text/plain" })
      */
     private $filename;
 
@@ -131,7 +134,7 @@ class Book
      */
     public function setCover($cover)
     {
-        $this->cover = $cover;
+        $this->cover = $this->_fixPath($cover);
 
         return $this;
     }
@@ -217,6 +220,53 @@ class Book
     {
         return $this->allowedDownload;
     }
+
+
+    /**
+     * @var
+     */
+    private $uploadDirs = array();
+
+    /**
+     * @param $dir
+     * @param string $type
+     * @return $this
+     */
+    public function setUploadDir($dir,$type='image') {
+        $this->uploadDirs[$type] = $dir;
+
+        return $this;
+    }
+
+    /**
+     * @param string $filename
+     * @return null|string
+     */
+    private function _fixPath($filename) {
+        if(null === $filename) {
+            return null;
+        }
+        return mb_substr($filename,0,2).DIRECTORY_SEPARATOR.$filename;
+    }
+
+    /**
+     * @param $file
+     * @param string $type [image|file]
+     * @return null|string
+     */
+    public function getUploadDir($filename,$type='image')
+    {
+        if(null === $filename) {
+            return null;
+        }
+
+        $dir = $this->uploadDirs[$type].DIRECTORY_SEPARATOR.mb_substr($filename,0,2);
+        @mkdir($dir,0755);
+
+        return $dir;
+
+    }
+
 
 }
 

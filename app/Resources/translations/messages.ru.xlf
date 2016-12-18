@@ -325,6 +325,15 @@
                 <source>help.more_information</source>
                 <target><![CDATA[Для дополнительной информации обратитесь к <a href="http://symfony.com/doc">Symfony документации</a>.]]></target>
             </trans-unit>
+            <trans-unit id="Download (PDF,EPUB,RTF,TXT)">
+                <source>Download (PDF,EPUB,RTF,TXT)</source>
+                <target>Файл для скачивания (PDF,EPUB,RTF,TXT)</target>
+            </trans-unit>
+            <trans-unit id="Cover image (JPG,PNG)">
+                <source>Cover image (JPG,PNG)</source>
+                <target>Обложка (JPG,PNG)</target>
+            </trans-unit>
+
         </body>
     </file>
 </xliff>

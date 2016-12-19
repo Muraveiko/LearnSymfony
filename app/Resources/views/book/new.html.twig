@@ -4,9 +4,20 @@
 
 {% block main %}
     <h1>Добавление новой книги</h1>
-
+    {% form_theme form 'bootstrap_3_layout.html.twig' %}
     {{ form_start(form) }}
-    {{ form_widget(form) }}
+
+    {{ form_row(form.name) }}
+    {{ form_row(form.author) }}
+    {{ form_row(form.cover) }}
+    {{ form_row(form.filename) }}
+    {{ form_row(form.dateRead) }}
+    {{ form_row(form.allowedDownload) }}
+
+    <div class="clearfix">
+        {{ form_widget(form.save,{ label: 'label.save', attr: { class: 'btn btn-success' } }) }}
+        {{ form_widget(form.saveAndCreateNew,{ label: 'label.save_and_create_new', attr: { class: 'btn btn-default' } }) }}
+    </div>
     {{ form_end(form) }}
 
 {% endblock %}

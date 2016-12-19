@@ -31,6 +31,8 @@ class BookController extends Controller
     {
         $book = new Book();
 
+        $book->setDateRead(new \DateTime('today'));
+
         $book->setUploadDir($this->getParameter('book_file_directory'),'file')
              ->setUploadDir($this->getParameter('book_image_directory'),'image');
 
@@ -88,4 +90,16 @@ class BookController extends Controller
         ]);
 
     }
+
+    /**
+     * Creates a new Book entity.
+     *
+     * @Route("/edit/{id}", requirements={"id": "\d+"}, name="edit_book")
+     * @Method({"GET", "POST"})
+     *
+     */
+    public function editAction(Book $book) {
+         var_dump($id); die();
+    }
+
 }

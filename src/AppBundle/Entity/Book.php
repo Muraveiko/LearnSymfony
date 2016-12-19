@@ -134,7 +134,7 @@ class Book
      */
     public function setCover($cover)
     {
-        $this->cover = $this->_fixPath($cover);
+        $this->cover = $cover;
 
         return $this;
     }
@@ -242,11 +242,11 @@ class Book
      * @param string $filename
      * @return null|string
      */
-    private function _fixPath($filename) {
+    static public function _fixPath($filename) {
         if(null === $filename) {
             return null;
         }
-        return mb_substr($filename,0,2).DIRECTORY_SEPARATOR.$filename;
+        return mb_substr($filename,0,2).'/'.$filename;
     }
 
     /**
@@ -267,6 +267,10 @@ class Book
 
     }
 
+    public function getCoverSubDir()
+    {
+        return mb_substr($this->cover,0,2);
+    }
 
 }
 

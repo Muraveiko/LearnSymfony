@@ -14,4 +14,5 @@ parameters:
     mailer_password: null
     secret: b3dd83f8c08f91b2a94701350bc696d3997f1429
     locale: ru
-
+    book_file_directory : ~
+    book_image_directory : ~

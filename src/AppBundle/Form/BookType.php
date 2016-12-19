@@ -5,7 +5,7 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type as Type;
 
 class BookType extends AbstractType
 {
@@ -16,10 +16,10 @@ class BookType extends AbstractType
     {
         $builder->add('name')
             ->add('author')
-            ->add('cover',FileType::class, array('label' => 'Cover image (JPG,PNG)'))
-            ->add('filename',FileType::class, array('label' => 'Download (PDF,EPUB,RTF,TXT)'))
+            ->add('cover',Type\FileType::class, array('label' => 'Cover image (JPG,PNG)'))
+            ->add('filename',Type\FileType::class, array('label' => 'Download (PDF,EPUB,RTF,TXT)'))
             ->add('dateRead')
-            ->add('allowedDownload');
+            ->add('allowedDownload',Type\CheckboxType::class);
     }
     
     /**
@@ -39,6 +39,5 @@ class BookType extends AbstractType
     {
         return 'appbundle_book';
     }
-
 
 }

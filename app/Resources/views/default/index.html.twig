@@ -12,14 +12,16 @@
         <article class="post">
             <h2>{{ book.name }}</h2>
             <h3>{{ book.author }}</h3>
-            <p>Здесь потом будет картинка</p>
+            {% if book.cover|length > 0 %}
+            <p><img src="{{ path('_book_cover',{ 'image': book.cover , 'subdir': book.getCoverSubDir} ) }}" /></p>
+            {% endif %}
             {{ book.dateRead|localizeddate('medium', 'none') }}
             <p>
-            {%  if book.allowedDownload %}
+            {%  if book.allowedDownload and book.filename|length > 0 %}
              <a href="#" class="btn btn-default"><i class="fa fa-cloud-download"></i></a>
             {% endif %}
             {% if is_granted('ROLE_ADMIN') %}
-                <a href="#" class="btn btn-primary"><i class="fa fa-edit"></i></a>
+                <a href="{{ path('edit_book',{ 'id': book.id }) }}" class="btn btn-primary"><i class="fa fa-edit"></i></a>
             {% endif %}
             </p>
         </article>

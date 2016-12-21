@@ -32,22 +32,23 @@ class UtilBooksSubcriber implements EventSubscriber,ContainerAwareInterface
 
     public function getSubscribedEvents()
     {
-        return ['prePersist','onLoad'];
+        return ['prePersist','postLoad'];
     }
 
     public function prePersist(LifecycleEventArgs $args) {
         $this->fixContainer($args);
     }
 
-    public function onLoad(LifecycleEventArgs $args) {
+    public function postLoad(LifecycleEventArgs $args) {
         $this->fixContainer($args);
     }
 
     public function fixContainer(LifecycleEventArgs $args){
-        $this->logger->debug('fixContainer');
+        $this->logger->debug('fixContainer call');
         $entity = $args->getEntity();
 
-        if($entity instanceof ContainerInterface) {
+        if($entity instanceof ContainerAwareInterface) {
+            $this->logger->debug('fixContainer set');
             $entity->setContainer($this->container);
         }
 

@@ -15,3 +15,16 @@ services:
             - { name: twig.extension }
 
 
+    app.bookentity.subscriber:
+        class: AppBundle\EventListener\UtilBooksSubcriber
+        arguments: ['@service_container']
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+    app.image_type_extension:
+        class: AppBundle\Form\Extension\ImageTypeExtension
+        tags:
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FileType }
+    app.cache.subscriber:
+        class: AppBundle\EventListener\CacheBooksSubscriber
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }

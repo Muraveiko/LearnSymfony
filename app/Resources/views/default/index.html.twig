@@ -8,6 +8,7 @@
 #}
 
 {% block body %}
+    {% include '_flash_messages.html.twig' %}
     {% for book in books %}
         <article class="post">
             <h2>{{ book.name }}</h2>

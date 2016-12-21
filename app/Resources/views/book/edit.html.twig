@@ -4,8 +4,12 @@
 
 {% block main %}
     <h1>Редактирование книги</h1>
-    {% form_theme edit_form 'bootstrap_3_layout.html.twig' %}
-    {{ form_start(edit_form) }}
+
+    {{ form_start(delete_form,{name:'delete_form'})  }}
+    {{ form_end(delete_form) }}
+
+    {% form_theme edit_form with ['bootstrap_3_layout.html.twig','@App/Form/fields.html.twig'] %}
+    {{ form_start(edit_form,{name:'edit_form'}) }}
 
     {{ form_row(edit_form.name) }}
     {{ form_row(edit_form.author) }}
@@ -15,7 +19,8 @@
     {{ form_row(edit_form.allowedDownload) }}
 
     <div class="clearfix">
+        <input type="submit" value="label.save" class="btn btn-success"/>
+        <button class="btn btn-danger" onclick="$('form[name^=delete_form]').submit();return false;">label.delete</button>
     </div>
     {{ form_end(edit_form) }}
-
 {% endblock %}

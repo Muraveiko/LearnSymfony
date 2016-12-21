@@ -1,0 +1,16 @@
+
+{% block file_widget %}
+    {% spaceless %}
+        {% if image_url is not null %}
+            <p><img src="{{ image_url }}"/></p>
+        {% endif %}
+        {% if file_info is not null %}
+        <pre><b>fileInfo</b>{{ file_info }}</pre>
+        {% endif %}
+
+        {{ block('form_widget') }}
+
+    {% endspaceless %}
+{% endblock %}
+
+

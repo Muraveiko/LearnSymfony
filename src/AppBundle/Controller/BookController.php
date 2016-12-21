@@ -29,39 +29,25 @@ class BookController extends Controller
      */
     public function addAction(Request $request)
     {
-        $book = new Book();
+        $this->container->get('logger')->addDebug('book addAction');
+        $book = new Book($this->container);
 
         $book->setDateRead(new \DateTime('today'));
 
-        $form = $this->createForm(BookType::class, $book)
-            ->add('save', SubmitType::class)
-            ->add('saveAndCreateNew', SubmitType::class);
+        $form = $this->createForm(BookType::class, $book);
 
         $form->handleRequest($request);
 
-        // the isSubmitted() method is completely optional because the other
-        // isValid() method already checks whether the form is submitted.
-        // However, we explicitly add it to improve code readability.
-        // See http://symfony.com/doc/current/best_practices/forms.html#handling-form-submits
         if ($form->isSubmitted() && $form->isValid()) {
 
             $book->upload();
-
-
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($book);
             $entityManager->flush();
 
-            // Flash messages are used to notify the user about the result of the
-            // actions. They are deleted automatically from the session as soon
-            // as they are accessed.
-            // See http://symfony.com/doc/current/book/controller.html#flash-messages
             $this->addFlash('success', 'post.created_successfully');
 
-            if ($form->get('saveAndCreateNew')->isClicked()) {
-                return $this->redirectToRoute('add_book');
-            }
 
             return $this->redirectToRoute('homepage');
         }
@@ -89,8 +75,9 @@ class BookController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $entityManager->flush();
 
+            $book->upload();
+            $entityManager->flush();
             $this->addFlash('success', 'post.updated_successfully');
 
             return $this->redirectToRoute('homepage');
@@ -114,21 +101,21 @@ class BookController extends Controller
      * the authorization mechanism will prevent the user accessing this resource).
      * The isAuthor() method is defined in the AppBundle\Entity\Post entity.
      */
-    public function deleteAction(Request $request, Post $post)
+    public function deleteAction(Book $book, Request $request)
     {
-        $form = $this->createDeleteForm($post);
+        $form = $this->createDeleteForm($book);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
 
-            $entityManager->remove($post);
+            $entityManager->remove($book);
             $entityManager->flush();
 
             $this->addFlash('success', 'post.deleted_successfully');
         }
 
-        return $this->redirectToRoute('admin_post_index');
+        return $this->redirectToRoute('homepage');
     }
 
 

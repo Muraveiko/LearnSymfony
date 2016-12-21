@@ -3,6 +3,9 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -17,8 +20,10 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\BookRepository")
  * @ORM\HasLifecycleCallbacks
  */
-class Book
+class Book implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * @var int
      *
@@ -55,6 +60,14 @@ class Book
      * @Assert\File(mimeTypes={ "image/jpeg","image/png"})
      */
     private $uploadCover;
+
+
+    public function __construct($container=null)
+    {
+        if($container instanceof ContainerInterface ) {
+            $this->container = $container;
+        }
+    }
 
     /**
      * @return mixed
@@ -105,7 +118,7 @@ class Book
     }
 
     /**
-     * @return Array|null
+     * @return array|null
      */
     public static function getUploadDirs()
     {
@@ -113,7 +126,7 @@ class Book
     }
 
     /**
-     * @param Array|null $uploadDirs
+     * @param array|null $uploadDirs
      */
     public static function setUploadDirs($uploadDirs)
     {
@@ -283,7 +296,7 @@ class Book
 
 
     /**
-     * @var  Array | null
+     * @var  array | null
      */
     static private $uploadDirs = null;
 
@@ -292,7 +305,8 @@ class Book
      * @param string $type
      * @return $this
      */
-    public function setUploadDir($dir,$type='image') {
+    public function setUploadDir($dir, $type = 'image')
+    {
         self::$uploadDirs[$type] = $dir;
 
         return $this;
@@ -304,12 +318,12 @@ class Book
      * @param string $type [image|file]
      * @return null|string
      */
-    public function getUploadDir($filename,$type='image')
+    public function getUploadDir($filename, $type = 'image')
     {
-        if(null === $filename) {
+        if (null === $filename) {
             return null;
         }
-        if(null === self::$uploadDirs) {
+        if (null === self::$uploadDirs) {
             $container = new ContainerBuilder();
             $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
             $loader->load('Book.yml');
@@ -320,8 +334,8 @@ class Book
             );
         }
 
-        $dir = self::$uploadDirs[$type].mb_substr($filename,0,2);
-        @mkdir($dir,0755);
+        $dir = self::$uploadDirs[$type] . mb_substr($filename, 0, 2);
+        @mkdir($dir, 0755);
 
         return $dir;
 
@@ -329,20 +343,32 @@ class Book
 
     public function getCoverSubDir()
     {
-        return mb_substr($this->cover,0,2);
+        return mb_substr($this->cover, 0, 2);
     }
 
 
     public function getFileSubDir()
     {
-        return mb_substr($this->bookFile,0,2);
+        return mb_substr($this->bookFile, 0, 2);
     }
 
-    public function upload() {
 
-        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file1 */
+    public function upload()
+    {
+        $this->uploadBook();
+        $this->uploadCover();
+    }
+
+    public function uploadBook()
+    {
+        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
         $file = $this->getUploadBookFile();
-        if($file instanceof \Symfony\Component\HttpFoundation\File\UploadedFile ) {
+
+        if (null === $file) {
+            return;
+        }
+
+        if ($file instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
             $fileName = md5(uniqid()) . '.' . $file->guessExtension();
             $file->move(
                 $this->getUploadDir($fileName, 'file'),
@@ -351,9 +377,19 @@ class Book
             $this->setBookFile($fileName);
         }
 
-        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file2 */
+        $this->uploadBookFile = null;
+    }
+
+    public function uploadCover()
+    {
+        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
         $file = $this->getUploadCover();
-        if($file instanceof \Symfony\Component\HttpFoundation\File\UploadedFile ) {
+
+        if (null === $file) {
+            return;
+        }
+
+        if ($file instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
             $fileCover = md5(uniqid()) . '.' . $file->guessExtension();
             $file->move(
                 $this->getUploadDir($fileCover, 'image'),
@@ -362,7 +398,7 @@ class Book
             $this->setCover($fileCover);
         }
 
-
+        $this->uploadCover = null;
     }
 
     /**
@@ -373,5 +409,11 @@ class Book
 
     }
 
+
+    public function getcoverUrl()
+    {
+        if(null === $this->cover) return null;
+        return $this->container->get('router')->generate('_book_cover',['image'=>$this->cover,'subdir'=>$this->getCoverSubDir()]);
+    }
 }
 

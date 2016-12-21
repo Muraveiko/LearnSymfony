@@ -33,9 +33,6 @@ class BookController extends Controller
 
         $book->setDateRead(new \DateTime('today'));
 
-        $book->setUploadDir($this->getParameter('book_file_directory'),'file')
-             ->setUploadDir($this->getParameter('book_image_directory'),'image');
-
         $form = $this->createForm(BookType::class, $book)
             ->add('save', SubmitType::class)
             ->add('saveAndCreateNew', SubmitType::class);
@@ -48,23 +45,8 @@ class BookController extends Controller
         // See http://symfony.com/doc/current/best_practices/forms.html#handling-form-submits
         if ($form->isSubmitted() && $form->isValid()) {
 
-            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file1 */
-            $file1 = $book->getFilename();
-            $fileName = md5(uniqid()).'.'.$file1->guessExtension();
-            $file1->move(
-                $book->getUploadDir($fileName,'file'),
-                $fileName
-            );
-            $book->setFilename($fileName);
+            $book->upload();
 
-            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file2 */
-            $file2 = $book->getCover();
-            $fileCover = md5(uniqid()).'.'.$file2->guessExtension();
-            $file2->move(
-                $book->getUploadDir($fileCover,'image'),
-                $fileCover
-            );
-            $book->setcover($fileCover);
 
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -94,12 +76,76 @@ class BookController extends Controller
     /**
      * Creates a new Book entity.
      *
-     * @Route("/edit/{id}", requirements={"id": "\d+"}, name="edit_book")
+     * @Route("/{id}/edit", requirements={"id": "\d+"}, name="edit_book")
      * @Method({"GET", "POST"})
      *
      */
-    public function editAction(Book $book) {
-         var_dump($id); die();
+    public function editAction(Book $book, Request $request) {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $editForm = $this->createForm(BookType::class, $book);
+        $deleteForm = $this->createDeleteForm($book);
+
+        $editForm->handleRequest($request);
+
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'post.updated_successfully');
+
+            return $this->redirectToRoute('homepage');
+        }
+
+        return $this->render('book/edit.html.twig', [
+            'book' => $book,
+            'edit_form' => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        ]);
+    }
+
+
+    /**
+     * Deletes a Post entity.
+     *
+     * @Route("/{id}",requirements={"id": "\d+"}, name="book_delete")
+     * @Method("DELETE")
+     *
+     * The Security annotation value is an expression (if it evaluates to false,
+     * the authorization mechanism will prevent the user accessing this resource).
+     * The isAuthor() method is defined in the AppBundle\Entity\Post entity.
+     */
+    public function deleteAction(Request $request, Post $post)
+    {
+        $form = $this->createDeleteForm($post);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $entityManager->remove($post);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'post.deleted_successfully');
+        }
+
+        return $this->redirectToRoute('admin_post_index');
+    }
+
+
+    /**
+     * Creates a form to delete  entity by id.
+     *
+     * @param  Book $book
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createDeleteForm(Book $book)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('book_delete', ['id' => $book->getId()]))
+            ->setMethod('DELETE')
+            ->getForm()
+            ;
     }
 
 }

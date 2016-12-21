@@ -1,8 +1,8 @@
 <?php
 
 namespace AppBundle\Repository;
-use AppBundle\Entity\Book;
 
+use AppBundle\Entity\Book;
 
 /**
  * BookRepository
@@ -12,6 +12,7 @@ use AppBundle\Entity\Book;
  */
 class BookRepository extends \Doctrine\ORM\EntityRepository
 {
+
 
     public function getList()
     {
@@ -23,6 +24,8 @@ class BookRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
+
 
 
 }

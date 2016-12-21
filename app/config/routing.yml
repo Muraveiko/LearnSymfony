@@ -6,3 +6,5 @@ fos_user:
 
 _book_cover:
     path: /upload/images/{subdir}/{image}
+_book_file:
+    path: /upload/files/{subdir}/{name}

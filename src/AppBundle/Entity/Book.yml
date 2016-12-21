@@ -1,0 +1,3 @@
+parameters:
+    book_file_directory : 'C:/local_repo/LearnSymfony/web/upload/files/'
+    book_image_directory : 'C:/local_repo/LearnSymfony/web/upload/images/'

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body_id 'editform' %}
+
+{% block main %}
+    <h1>Редактирование книги</h1>
+    {% form_theme edit_form 'bootstrap_3_layout.html.twig' %}
+    {{ form_start(edit_form) }}
+
+    {{ form_row(edit_form.name) }}
+    {{ form_row(edit_form.author) }}
+    {{ form_row(edit_form.uploadCover) }}
+    {{ form_row(edit_form.uploadBookFile) }}
+    {{ form_row(edit_form.dateRead) }}
+    {{ form_row(edit_form.allowedDownload) }}
+
+    <div class="clearfix">
+    </div>
+    {{ form_end(edit_form) }}
+
+{% endblock %}

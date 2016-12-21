@@ -4,12 +4,18 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 
 /**
  * Book
  *
  * @ORM\Table(name="book",indexes={@ORM\Index(name="date_read_idx", columns={"date_read"})})
  * @ORM\Entity(repositoryClass="AppBundle\Repository\BookRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Book
 {
@@ -39,18 +45,95 @@ class Book
     /**
      * @var string
      *
-     * @ORM\Column(name="cover", type="string", length=45)
-     * @Assert\File(mimeTypes={ "image/jpeg","image/png"})
+     * @ORM\Column(name="cover", type="string", length=128)
      */
     private $cover;
+
+    /**
+     * @var
+     *
+     * @Assert\File(mimeTypes={ "image/jpeg","image/png"})
+     */
+    private $uploadCover;
+
+    /**
+     * @return mixed
+     */
+    public function getUploadCover()
+    {
+        return $this->uploadCover;
+    }
+
+    /**
+     * @param UploadedFile $uploadCover
+     */
+    public function setUploadCover(UploadedFile $uploadCover)
+    {
+        $this->uploadCover = $uploadCover;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBookFile()
+    {
+        return $this->bookFile;
+    }
+
+    /**
+     * @param string $bookFile
+     */
+    public function setBookFile($bookFile)
+    {
+        $this->bookFile = $bookFile;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUploadBookFile()
+    {
+        return $this->uploadBookFile;
+    }
+
+    /**
+     * @param UploadedFile $uploadBookFile
+     */
+    public function setUploadBookFile(UploadedFile $uploadBookFile)
+    {
+        $this->uploadBookFile = $uploadBookFile;
+    }
+
+    /**
+     * @return Array|null
+     */
+    public static function getUploadDirs()
+    {
+        return self::$uploadDirs;
+    }
+
+    /**
+     * @param Array|null $uploadDirs
+     */
+    public static function setUploadDirs($uploadDirs)
+    {
+        self::$uploadDirs = $uploadDirs;
+    }
 
     /**
      * @var string
      *
      * @ORM\Column(name="filename", type="string", length=255)
+     */
+    private $bookFile;
+
+
+    /**
+     * @var
+     *
      * @Assert\File(mimeTypes={ "application/pdf","application/epub+zip","application/rtf","text/rtf","text/plain" })
      */
-    private $filename;
+    private $uploadBookFile;
 
     /**
      * @var \DateTime
@@ -149,29 +232,6 @@ class Book
         return $this->cover;
     }
 
-    /**
-     * Set filename
-     *
-     * @param string $filename
-     *
-     * @return Book
-     */
-    public function setFilename($filename)
-    {
-        $this->filename = $filename;
-
-        return $this;
-    }
-
-    /**
-     * Get filename
-     *
-     * @return string
-     */
-    public function getFilename()
-    {
-        return $this->filename;
-    }
 
     /**
      * Set dateRead
@@ -223,9 +283,9 @@ class Book
 
 
     /**
-     * @var
+     * @var  Array | null
      */
-    private $uploadDirs = array();
+    static private $uploadDirs = null;
 
     /**
      * @param $dir
@@ -233,21 +293,11 @@ class Book
      * @return $this
      */
     public function setUploadDir($dir,$type='image') {
-        $this->uploadDirs[$type] = $dir;
+        self::$uploadDirs[$type] = $dir;
 
         return $this;
     }
 
-    /**
-     * @param string $filename
-     * @return null|string
-     */
-    static public function _fixPath($filename) {
-        if(null === $filename) {
-            return null;
-        }
-        return mb_substr($filename,0,2).'/'.$filename;
-    }
 
     /**
      * @param $file
@@ -259,8 +309,18 @@ class Book
         if(null === $filename) {
             return null;
         }
+        if(null === self::$uploadDirs) {
+            $container = new ContainerBuilder();
+            $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
+            $loader->load('Book.yml');
 
-        $dir = $this->uploadDirs[$type].DIRECTORY_SEPARATOR.mb_substr($filename,0,2);
+            self::$uploadDirs = array(
+                'image' => $container->getParameter('book_image_directory'),
+                'file' => $container->getParameter('book_file_directory'),
+            );
+        }
+
+        $dir = self::$uploadDirs[$type].mb_substr($filename,0,2);
         @mkdir($dir,0755);
 
         return $dir;
@@ -270,6 +330,47 @@ class Book
     public function getCoverSubDir()
     {
         return mb_substr($this->cover,0,2);
+    }
+
+
+    public function getFileSubDir()
+    {
+        return mb_substr($this->bookFile,0,2);
+    }
+
+    public function upload() {
+
+        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file1 */
+        $file = $this->getUploadBookFile();
+        if($file instanceof \Symfony\Component\HttpFoundation\File\UploadedFile ) {
+            $fileName = md5(uniqid()) . '.' . $file->guessExtension();
+            $file->move(
+                $this->getUploadDir($fileName, 'file'),
+                $fileName
+            );
+            $this->setBookFile($fileName);
+        }
+
+        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file2 */
+        $file = $this->getUploadCover();
+        if($file instanceof \Symfony\Component\HttpFoundation\File\UploadedFile ) {
+            $fileCover = md5(uniqid()) . '.' . $file->guessExtension();
+            $file->move(
+                $this->getUploadDir($fileCover, 'image'),
+                $fileCover
+            );
+            $this->setCover($fileCover);
+        }
+
+
+    }
+
+    /**
+     * @ORM\PostRemove()
+     */
+    public function removeUpload()
+    {
+
     }
 
 }

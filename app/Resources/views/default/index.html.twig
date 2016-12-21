@@ -17,8 +17,8 @@
             {% endif %}
             {{ book.dateRead|localizeddate('medium', 'none') }}
             <p>
-            {%  if book.allowedDownload and book.filename|length > 0 %}
-             <a href="#" class="btn btn-default"><i class="fa fa-cloud-download"></i></a>
+            {%  if book.allowedDownload and book.bookFile|length > 0 %}
+             <a href="{{ path('_book_file',{ 'name':book.bookFile, 'subdir': book.getFileSubDir}) }}" class="btn btn-default"><i class="fa fa-cloud-download"></i></a>
             {% endif %}
             {% if is_granted('ROLE_ADMIN') %}
                 <a href="{{ path('edit_book',{ 'id': book.id }) }}" class="btn btn-primary"><i class="fa fa-edit"></i></a>

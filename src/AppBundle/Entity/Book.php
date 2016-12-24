@@ -2,9 +2,7 @@
 
 namespace AppBundle\Entity;
 
-use Doctrine\Instantiator\Exception\UnexpectedValueException;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -26,6 +24,11 @@ class Book implements ContainerAwareInterface
     use ContainerAwareTrait;
 
     /**
+     * @var  array | null
+     */
+    static private $uploadDirs = null;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
@@ -38,6 +41,12 @@ class Book implements ContainerAwareInterface
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 255,
+     *      minMessage = "Name must be at least {{ limit }} characters long",
+     *      maxMessage = "Name cannot be longer than {{ limit }} characters"
+     * )
      */
     private $name;
 
@@ -45,6 +54,12 @@ class Book implements ContainerAwareInterface
      * @var string
      *
      * @ORM\Column(name="author", type="string", length=128)
+     * @Assert\Length(
+     *      min = 1,
+     *      max = 127,
+     *      minMessage = "Author must be at least {{ limit }} characters long",
+     *      maxMessage = "Author cannot be longer than {{ limit }} characters"
+     * )
      */
     private $author;
 
@@ -52,80 +67,19 @@ class Book implements ContainerAwareInterface
      * @var string
      *
      * @ORM\Column(name="cover", type="string", length=128, nullable=true)
+     * @Assert\File(
+     *     maxSize="1m",
+     *     mimeTypes={ "image/jpeg","image/png"}
+     * )
      */
     private $cover;
 
     /**
      * @var
      *
-     * @Assert\File(mimeTypes={ "image/jpeg","image/png"})
      */
-    private $uploadCover;
+    private $uploadCover = null;
 
-
-    /**
-     * @return mixed
-     */
-    public function getUploadCover()
-    {
-        return $this->uploadCover;
-    }
-
-    /**
-     * @param UploadedFile $uploadCover
-     */
-    public function setUploadCover(UploadedFile $uploadCover)
-    {
-        $this->uploadCover = $uploadCover;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBookFile()
-    {
-        return $this->bookFile;
-    }
-
-    /**
-     * @param string $bookFile
-     */
-    public function setBookFile($bookFile)
-    {
-        $this->bookFile = $bookFile;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUploadBookFile()
-    {
-        return $this->uploadBookFile;
-    }
-
-    /**
-     * @param UploadedFile $uploadBookFile
-     */
-    public function setUploadBookFile(UploadedFile $uploadBookFile)
-    {
-        $this->uploadBookFile = $uploadBookFile;
-    }
-
-    /**
-     * @return array|null
-     */
-    public static function getUploadDirs()
-    {
-        return self::$uploadDirs;
-    }
-
-    /**
-     * @param array|null $uploadDirs
-     */
-    public static function setUploadDirs($uploadDirs)
-    {
-        self::$uploadDirs = $uploadDirs;
-    }
 
     /**
      * @var string
@@ -136,16 +90,20 @@ class Book implements ContainerAwareInterface
 
 
     /**
-     * @var
+     * @var mixed
      *
-     * @Assert\File(mimeTypes={ "application/pdf","application/epub+zip","application/rtf","text/rtf","text/plain" })
+     * @Assert\File(
+     *     maxSize="5m",
+     *     mimeTypes={ "application/pdf","application/epub+zip","application/rtf","text/rtf","text/plain" }
+     * )
      */
-    private $uploadBookFile;
+    private $uploadBookFile = null;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="date_read", type="date")
+     *
      */
     private $dateRead;
 
@@ -289,10 +247,73 @@ class Book implements ContainerAwareInterface
     }
 
 
+
+
     /**
-     * @var  array | null
+     * @return mixed
      */
-    static private $uploadDirs = null;
+    public function getUploadCover()
+    {
+        return $this->uploadCover;
+    }
+
+    /**
+     * @param UploadedFile $uploadCover
+     */
+    public function setUploadCover(UploadedFile $uploadCover)
+    {
+        $this->uploadCover = $uploadCover;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBookFile()
+    {
+        return $this->bookFile;
+    }
+
+    /**
+     * @param string $bookFile
+     */
+    public function setBookFile($bookFile)
+    {
+        $this->bookFile = $bookFile;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUploadBookFile()
+    {
+        return $this->uploadBookFile;
+    }
+
+    /**
+     * @param UploadedFile $uploadBookFile
+     */
+    public function setUploadBookFile(UploadedFile $uploadBookFile)
+    {
+        $this->uploadBookFile = $uploadBookFile;
+    }
+
+    /**
+     * @return array|null
+     */
+    public static function getUploadDirs()
+    {
+        return self::$uploadDirs;
+    }
+
+    /**
+     * @param array|null $uploadDirs
+     */
+    public static function setUploadDirs($uploadDirs)
+    {
+        self::$uploadDirs = $uploadDirs;
+    }
+
+
 
     /**
      * @param $dir

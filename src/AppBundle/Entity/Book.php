@@ -409,6 +409,7 @@ class Book implements ContainerAwareInterface
      */
     public function uploadCover()
     {
+        $this->container->get('logger')->addDebug('call uploadCover()');
         /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
         $file = $this->getUploadCover();
 
@@ -422,6 +423,7 @@ class Book implements ContainerAwareInterface
                 $this->getUploadDir($fileCover, 'image'),
                 $fileCover
             );
+            $this->container->get('logger')->addDebug('move '.$fileCover);
             $this->setCover($fileCover);
         }
 
@@ -433,8 +435,8 @@ class Book implements ContainerAwareInterface
      */
     public function removeUpload()
     {
-        $this->removeBookFile();
-        $this->removeCover();
+        $this->removeBookFile($this->bookFile);
+        $this->removeCover($this->cover);
     }
 
     /**
@@ -443,7 +445,6 @@ class Book implements ContainerAwareInterface
      */
     public function getPathCover($cover = null)
     {
-        if (null === $cover) $cover = $this->cover;
         if (null === $cover) return null;
         return $this->getUploadDir($cover, 'image') . DIRECTORY_SEPARATOR . $cover;
     }
@@ -454,7 +455,6 @@ class Book implements ContainerAwareInterface
      */
     public function removeCover($cover = null)
     {
-        if (null === $cover) $cover = $this->cover;
         if (null === $cover) return;
         $file = $this->getPathCover($cover);
         $this->cover = null;
@@ -479,7 +479,6 @@ class Book implements ContainerAwareInterface
      */
     public function removeBookFile($bookFile = null)
     {
-        if (null === $bookFile) $bookFile = $this->bookFile;
         if (null === $bookFile) return;
         $file = $this->getPathBookFile($bookFile);
         $this->bookFile = null;

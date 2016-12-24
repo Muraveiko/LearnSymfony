@@ -64,15 +64,16 @@ class Book implements ContainerAwareInterface
      * @var string
      *
      * @ORM\Column(name="cover", type="string", length=128, nullable=true)
-     * @Assert\File(
-     *     maxSize="1m",
-     *     mimeTypes={ "image/jpeg","image/png"}
-     * )
      */
     private $cover;
 
     /**
-     * @var
+     * @var mixed
+     *
+     * @Assert\File(
+     *     maxSize="1m",
+     *     mimeTypes={ "image/jpeg","image/png"}
+     * )
      *
      */
     private $uploadCover = null;
@@ -102,7 +103,7 @@ class Book implements ContainerAwareInterface
      * @ORM\Column(name="date_read", type="date")
      *
      */
-    private $dateRead ;
+    private $dateRead;
 
     /**
      * @var bool
@@ -309,7 +310,6 @@ class Book implements ContainerAwareInterface
     }
 
 
-
     /**
      * @param $dir
      * @param string $type
@@ -342,10 +342,10 @@ class Book implements ContainerAwareInterface
         }
 
         $dir = self::$uploadDirs[$type] . mb_substr($filename, 0, 2);
-        if ( ! is_dir($dir) && (false === @mkdir($dir, 0775, true))) {
+        if (!is_dir($dir) && (false === @mkdir($dir, 0775, true))) {
             throw new \Exception('directory not writable');
         }
-        if ( ! is_writable($dir)) {
+        if (!is_writable($dir)) {
             throw new \Exception('directory not writable');
         }
 
@@ -443,21 +443,23 @@ class Book implements ContainerAwareInterface
      */
     public function getPathCover($cover = null)
     {
-        if(null === $cover) $cover = $this->cover;
-        if(null === $cover) return null;
-        return $this->getUploadDir($cover,'image').DIRECTORY_SEPARATOR.$cover;
+        if (null === $cover) $cover = $this->cover;
+        if (null === $cover) return null;
+        return $this->getUploadDir($cover, 'image') . DIRECTORY_SEPARATOR . $cover;
     }
 
     /**
      * @param null $cover
-     * @return bool|null
+     * @return void
      */
     public function removeCover($cover = null)
     {
-        if(null === $cover) $cover = $this->cover;
-        if(null === $cover) return null;
+        if (null === $cover) $cover = $this->cover;
+        if (null === $cover) return;
         $file = $this->getPathCover($cover);
-        return @unlink($file);
+        $this->cover = null;
+        @unlink($file);
+        return;
     }
 
     /**
@@ -466,21 +468,23 @@ class Book implements ContainerAwareInterface
      */
     public function getPathBookFile($bookFile = null)
     {
-        if(null === $bookFile) $bookFile = $this->bookFile;
-        if(null === $bookFile) return null;
-        return $this->getUploadDir($bookFile,'file').DIRECTORY_SEPARATOR.$bookFile;
+        if (null === $bookFile) $bookFile = $this->bookFile;
+        if (null === $bookFile) return null;
+        return $this->getUploadDir($bookFile, 'file') . DIRECTORY_SEPARATOR . $bookFile;
     }
 
     /**
      * @param null $bookFile
-     * @return bool|null
+     * @return void
      */
     public function removeBookFile($bookFile = null)
     {
-        if(null === $bookFile) $bookFile = $this->bookFile;
-        if(null === $bookFile) return null;
+        if (null === $bookFile) $bookFile = $this->bookFile;
+        if (null === $bookFile) return;
         $file = $this->getPathBookFile($bookFile);
-        return @unlink($file);
+        $this->bookFile = null;
+        @unlink($file);
+        return;
     }
 
 
@@ -489,8 +493,8 @@ class Book implements ContainerAwareInterface
      */
     public function getcoverUrl()
     {
-        if(null === $this->cover) return null;
-        return $this->container->get('router')->generate('_book_cover',['image'=>$this->cover,'subdir'=>$this->getCoverSubDir()]);
+        if (null === $this->cover) return null;
+        return $this->container->get('router')->generate('_book_cover', ['image' => $this->cover, 'subdir' => $this->getCoverSubDir()]);
     }
 
     /**
@@ -498,9 +502,13 @@ class Book implements ContainerAwareInterface
      */
     public function infoCover()
     {
-        if(null === $this->cover) return null;
-        $file = $this->getUploadDir($this->cover,'image').DIRECTORY_SEPARATOR.$this->cover;
-        return ' '.$this->cover.' ('.@filesize($file).' bytes) ';
+        if (null === $this->cover) return null;
+        $file = $this->getUploadDir($this->cover, 'image') . DIRECTORY_SEPARATOR . $this->cover;
+        if (!file_exists($file)) {
+            return 'notFound';
+        }
+
+        return $this->cover . ' (' . @filesize($file) . ' bytes) ';
     }
 
     /**
@@ -508,9 +516,13 @@ class Book implements ContainerAwareInterface
      */
     public function infoBookFile()
     {
-        if(null === $this->bookFile) return null;
-        $file = $this->getUploadDir($this->bookFile,'file').DIRECTORY_SEPARATOR.$this->bookFile;
-        return ' '.$this->bookFile.' ('.@filesize($file).' bytes) ';
+        if (null === $this->bookFile) return null;
+        $file = $this->getUploadDir($this->bookFile, 'file') . DIRECTORY_SEPARATOR . $this->bookFile;
+        if (!file_exists($file)) {
+            return 'notFound';
+        }
+
+        return $this->bookFile . ' (' . @filesize($file) . ' bytes) ';
     }
 
 }

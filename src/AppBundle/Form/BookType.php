@@ -30,6 +30,7 @@ class BookType extends AbstractType
             ])
             ->add('dateRead', Type\DateType::class, [
             ]);
+
     }
 
     /**

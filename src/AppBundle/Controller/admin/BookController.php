@@ -37,6 +37,9 @@ class BookController extends Controller
         $book = new Book();
         $book->setContainer($this->container);
 
+        // инициализация
+        $book->setDateRead(new \DateTime());
+
         $form = $this->createForm(BookType::class, $book);
 
         $form->handleRequest($request);
@@ -82,9 +85,11 @@ class BookController extends Controller
 
         $editForm->handleRequest($request);
 
+
         if ($editForm->isSubmitted() && $editForm->isValid()) {
 
             $unlinkFiles = $request->get('unlinkFiles');
+
             if (!is_null($unlinkFiles)) {
                 foreach ($unlinkFiles as $property => $value) {
                     $method = 'set' . str_replace('upload', '', $property);

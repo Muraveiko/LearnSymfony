@@ -16,22 +16,23 @@ class BookType extends AbstractType
     {
         $builder->add('name')
             ->add('author')
-            ->add('uploadCover',Type\FileType::class, array(
+            ->add('uploadCover', Type\FileType::class, [
                 'required' => false,
-                'image_path'=>'getCoverUrl',
-                'file_info' =>'infoCover'
-            ))
-            ->add('uploadBookFile',Type\FileType::class,array(
+                'image_path' => 'getCoverUrl',
+                'file_info' => 'infoCover'
+            ])
+            ->add('uploadBookFile', Type\FileType::class, [
                 'required' => false,
-                'file_info' =>'infoBookFile'
-            ))
-            ->add('allowedDownload',Type\CheckboxType::class,array(
+                'file_info' => 'infoBookFile'
+            ])
+            ->add('allowedDownload', Type\CheckboxType::class, [
                 'required' => false,
-            ))
-            ->add('dateRead')
-            ;
+            ])
+            ->add('dateRead', Type\DateType::class, [
+                'empty_data' => new \DateTime('today')
+            ]);
     }
-    
+
     /**
      * {@inheritdoc}
      */

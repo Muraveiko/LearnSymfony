@@ -11,29 +11,36 @@ class ImgExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('my_img', [$this, 'buildImage'],array('is_safe' => array('html'))),
+            new \Twig_SimpleFunction('my_img', [$this, 'buildImage'], ['is_safe' => ['html']])
         ];
     }
 
-    public function buildImage($src,array $args = array())
+    /**
+     * Это пример создания своей функии для шаблонизатора
+     *
+     * @param $src
+     * @param array $args
+     * @return string - html code
+     */
+    public function buildImage($src, array $args = array())
     {
-       $o = array_merge(
-           array(
+        $args = array_merge(
+            [
                'width' => null,
-               'height'=> null
-           ),$args
-       );
+               'height' => null
+            ], $args
+        );
 
-       $dop = '';
+        $dop = '';
 
-       if(!is_null($o['width'])) {
-         $dop .= 'width="'.$o['width'].'" ';
-       }
-        if(!is_null($o['height'])) {
-            $dop .= 'height="'.$o['height'].'" ';
+        if (!is_null($args['width'])) {
+            $dop .= 'width="' . $args['width'] . '" ';
+        }
+        if (!is_null($args['height'])) {
+            $dop .= 'height="' . $args['height'] . '" ';
         }
 
-       return '<img src="'.$src.'" '.$dop.'/>';
+        return '<img src="' . $src . '" ' . $dop . '/>';
     }
 
     /**

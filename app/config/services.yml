@@ -1,12 +1,6 @@
 services:
-    # These are the Twig extensions that create new filters and functions for
+    # These are the Twig extensions that create new function for
     # using them in the templates
-    app.twig.app_extension:
-        public:    false
-        class:     AppBundle\Twig\AppExtension
-        arguments: ['%app_locales%']
-        tags:
-            - { name: twig.extension }
 
     app.twig.img_extension:
         public:    false
@@ -14,29 +8,36 @@ services:
         tags:
             - { name: twig.extension }
 
+    # локализация сообщений в шаблонах
     app.twig.intl_extension:
         public: false
         class:  Twig_Extensions_Extension_Intl
         tags:
             - { name: twig.extension }
 
+    # свой шаблон для редактирования аплоада
+    app.form.image_type_extension:
+        class: AppBundle\Form\Extension\ImageTypeExtension
+        tags:
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FileType }
 
-    app.entity.container:
-        class: AppBundle\EventListener\ContainerForDoctrineSubscriber
-        arguments: ['@service_container']
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
-    app.entity.book.cache:
-        class: AppBundle\EventListener\CacheBooksSubscriber
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
+    # удаление картинок и файлов, которые больше не требуются
     app.entity.book.file_manager:
         class: AppBundle\EventListener\FManagerBooksSubscriber
         tags:
             - { name: doctrine.event_subscriber, connection: default }
 
-
-    app.form.image_type_extension:
-        class: AppBundle\Form\Extension\ImageTypeExtension
+    # Внедряет в сущности возможность доступа к компонентам симфони
+    app.entity.container:
+        class: AppBundle\EventListener\ContainerForDoctrineSubscriber
+        arguments: ['@service_container']
         tags:
-            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FileType }
+            - { name: doctrine.event_subscriber, connection: default }
+
+    # управление мемкешем
+    app.entity.book.cache:
+        class: AppBundle\EventListener\CacheBooksSubscriber
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+
+

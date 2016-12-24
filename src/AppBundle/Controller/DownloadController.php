@@ -8,7 +8,7 @@ use AppBundle\Entity\Book;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
-class BookController extends Controller
+class DownloadController extends Controller
 {
     /**
      * @Route("/download/{id}", requirements={"id": "\d+"}, name="book_download")

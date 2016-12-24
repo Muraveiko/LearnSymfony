@@ -15,12 +15,11 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
  *
  * @package AppBundle\EventListener
  */
- class ContainerForDoctrineSubscriber implements EventSubscriber,ContainerAwareInterface
+class ContainerForDoctrineSubscriber implements EventSubscriber, ContainerAwareInterface
 {
     /** @var ContainerInterface */
     private $container;
 
-    private $logger;
     /**
      * Sets the container.
      *
@@ -31,35 +30,51 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
         $this->container = $container;
     }
 
+    /**
+     * ContainerForDoctrineSubscriber constructor.
+     * @param ContainerInterface $container
+     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getSubscribedEvents()
     {
         return ['postLoad'];
     }
 
-     /**
-      * @param LifecycleEventArgs $args
-      * После создания объекта в ручную вызовете SetContainer или persist нужно звать сразу после конструктора
-      */
-    public function prePersist(LifecycleEventArgs $args) {
-        if( 1 == 1 ) { // заглушено
-            throw new \Exception('читайте примечание ');
-        }
+    /**
+     * @param LifecycleEventArgs $args
+     * @deprecated
+     */
+    public function prePersist(LifecycleEventArgs $args)
+    {
+        @trigger_error(sprintf('После создания объекта в ручную вызовете SetContainer или persist нужно звать сразу после конструктора'), E_USER_DEPRECATED);
         $this->fixContainer($args);
     }
 
-    public function postLoad(LifecycleEventArgs $args) {
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function postLoad(LifecycleEventArgs $args)
+    {
         $this->fixContainer($args);
     }
 
-    public function fixContainer(LifecycleEventArgs $args){
+    /**
+     * Внедрение связи с контейнером из доктрины
+     *
+     * @param LifecycleEventArgs $args
+     */
+    public function fixContainer(LifecycleEventArgs $args)
+    {
         $entity = $args->getEntity();
 
-        if($entity instanceof ContainerAwareInterface) {
+        if ($entity instanceof ContainerAwareInterface) {
             $entity->setContainer($this->container);
         }
 

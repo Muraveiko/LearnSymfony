@@ -1,6 +1,3 @@
-app:
-    resource: "@AppBundle/Controller/"
-    type:     annotation
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
 
@@ -8,3 +5,8 @@ _book_cover:
     path: /upload/images/{subdir}/{image}
 _book_file:
     path: /upload/files/{subdir}/{name}
+
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+

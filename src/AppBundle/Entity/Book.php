@@ -7,9 +7,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 
 /**
@@ -247,8 +244,6 @@ class Book implements ContainerAwareInterface
     }
 
 
-
-
     /**
      * @return mixed
      */
@@ -339,13 +334,10 @@ class Book implements ContainerAwareInterface
             return null;
         }
         if (null === self::$uploadDirs) {
-            $container = new ContainerBuilder();
-            $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
-            $loader->load('Book.yml');
 
             self::$uploadDirs = array(
-                'image' => $container->getParameter('book_image_directory'),
-                'file' => $container->getParameter('book_file_directory'),
+                'image' => $this->container->getParameter('book_image_directory'),
+                'file' => $this->container->getParameter('book_file_directory'),
             );
         }
 
@@ -361,24 +353,36 @@ class Book implements ContainerAwareInterface
 
     }
 
+    /**
+     * @return string
+     */
     public function getCoverSubDir()
     {
         return mb_substr($this->cover, 0, 2);
     }
 
 
+    /**
+     * @return string
+     */
     public function getFileSubDir()
     {
         return mb_substr($this->bookFile, 0, 2);
     }
 
 
+    /**
+     *
+     */
     public function upload()
     {
         $this->uploadBookFile();
         $this->uploadCover();
     }
 
+    /**
+     *
+     */
     public function uploadBookFile()
     {
         /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
@@ -400,6 +404,9 @@ class Book implements ContainerAwareInterface
         $this->uploadBookFile = null;
     }
 
+    /**
+     *
+     */
     public function uploadCover()
     {
         /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
@@ -421,12 +428,19 @@ class Book implements ContainerAwareInterface
         $this->uploadCover = null;
     }
 
+    /**
+     *
+     */
     public function removeUpload()
     {
         $this->removeBookFile();
         $this->removeCover();
     }
 
+    /**
+     * @param null $cover
+     * @return null|string
+     */
     public function getPathCover($cover = null)
     {
         if(null === $cover) $cover = $this->cover;
@@ -434,14 +448,22 @@ class Book implements ContainerAwareInterface
         return $this->getUploadDir($cover,'image').DIRECTORY_SEPARATOR.$cover;
     }
 
+    /**
+     * @param null $cover
+     * @return bool|null
+     */
     public function removeCover($cover = null)
     {
         if(null === $cover) $cover = $this->cover;
         if(null === $cover) return null;
         $file = $this->getPathCover($cover);
-        @unlink($file);
+        return @unlink($file);
     }
 
+    /**
+     * @param null $bookFile
+     * @return null|string
+     */
     public function getPathBookFile($bookFile = null)
     {
         if(null === $bookFile) $bookFile = $this->bookFile;
@@ -449,21 +471,31 @@ class Book implements ContainerAwareInterface
         return $this->getUploadDir($bookFile,'file').DIRECTORY_SEPARATOR.$bookFile;
     }
 
+    /**
+     * @param null $bookFile
+     * @return bool|null
+     */
     public function removeBookFile($bookFile = null)
     {
         if(null === $bookFile) $bookFile = $this->bookFile;
         if(null === $bookFile) return null;
         $file = $this->getPathBookFile($bookFile);
-        @unlink($file);
+        return @unlink($file);
     }
 
 
+    /**
+     * @return null|string
+     */
     public function getcoverUrl()
     {
         if(null === $this->cover) return null;
         return $this->container->get('router')->generate('_book_cover',['image'=>$this->cover,'subdir'=>$this->getCoverSubDir()]);
     }
 
+    /**
+     * @return null|string
+     */
     public function infoCover()
     {
         if(null === $this->cover) return null;
@@ -471,6 +503,9 @@ class Book implements ContainerAwareInterface
         return ' '.$this->cover.' ('.@filesize($file).' bytes) ';
     }
 
+    /**
+     * @return null|string
+     */
     public function infoBookFile()
     {
         if(null === $this->bookFile) return null;

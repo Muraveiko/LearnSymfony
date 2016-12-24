@@ -1,39 +1,41 @@
 <?php
 
-namespace AppBundle\Controller\admin;
+/*
+ * Пример простой админки для управления сущностью КНИГА
+ */
 
-use AppBundle\Form\BookType;
+namespace AppBundle\Controller\Admin;
+
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\BrowserKit\Response;
-use Symfony\Component\HttpFoundation\Request;
-use AppBundle\Entity\Book;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use AppBundle\Entity\Book;
+use AppBundle\Form\BookType;
 
 
 /**
  * @Route("/book")
+ * @Security("has_role('ROLE_ADMIN')")
  */
 class BookController extends Controller
 {
     /**
-     * Creates a new Book entity.
+     * Add book
      *
      * @Route("/new", name="add_book")
-     * @Method({"GET", "POST"})
      *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function addAction(Request $request)
     {
+        // учимся выводить отладку в логи
         $this->container->get('logger')->addDebug('book addAction');
+
         $book = new Book();
         $book->setContainer($this->container);
-
-        $book->setDateRead(new \DateTime('today'));
 
         $form = $this->createForm(BookType::class, $book);
 
@@ -61,13 +63,18 @@ class BookController extends Controller
     }
 
     /**
-     * Creates a new Book entity.
+     * Edit a  Book entity.
      *
      * @Route("/{id}/edit", requirements={"id": "\d+"}, name="edit_book")
      * @Method({"GET", "POST"})
      *
+     * @param Book $book
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function editAction(Book $book, Request $request) {
+    public function editAction(Book $book, Request $request)
+    {
         $entityManager = $this->getDoctrine()->getManager();
 
         $editForm = $this->createForm(BookType::class, $book);
@@ -78,9 +85,9 @@ class BookController extends Controller
         if ($editForm->isSubmitted() && $editForm->isValid()) {
 
             $unlinkFiles = $request->get('unlinkFiles');
-            if(!is_null($unlinkFiles)) {
+            if (!is_null($unlinkFiles)) {
                 foreach ($unlinkFiles as $property => $value) {
-                    $method = 'set'.str_replace('upload','',$property);
+                    $method = 'set' . str_replace('upload', '', $property);
                     $book->$method(null);
                 }
             }
@@ -100,14 +107,15 @@ class BookController extends Controller
 
 
     /**
-     * Deletes a Post entity.
-    *
+     * Deletes a entity.
+     *
      * @Route("/{id}",requirements={"id": "\d+"}, name="book_delete")
      * @Method("DELETE")
      *
-     * The Security annotation value is an expression (if it evaluates to false,
-     * the authorization mechanism will prevent the user accessing this resource).
-     * The isAuthor() method is defined in the AppBundle\Entity\Post entity.
+     * @param Book $book
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Book $book, Request $request)
     {
@@ -139,8 +147,7 @@ class BookController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('book_delete', ['id' => $book->getId()]))
             ->setMethod('DELETE')
-            ->getForm()
-            ;
+            ->getForm();
     }
 
 

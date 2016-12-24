@@ -102,7 +102,7 @@ class Book implements ContainerAwareInterface
      * @ORM\Column(name="date_read", type="date")
      *
      */
-    private $dateRead;
+    private $dateRead ;
 
     /**
      * @var bool

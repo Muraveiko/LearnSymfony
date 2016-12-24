@@ -29,7 +29,6 @@ class BookType extends AbstractType
                 'required' => false,
             ])
             ->add('dateRead', Type\DateType::class, [
-                'empty_data' => new \DateTime('today')
             ]);
     }
 

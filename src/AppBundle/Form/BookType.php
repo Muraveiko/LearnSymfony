@@ -19,11 +19,11 @@ class BookType extends AbstractType
             ->add('uploadCover', Type\FileType::class, [
                 'required' => false,
                 'image_path' => 'getCoverUrl',
-                'file_info' => 'infoCover'
+                'file_info' => 'infoCover',
             ])
             ->add('uploadBookFile', Type\FileType::class, [
                 'required' => false,
-                'file_info' => 'infoBookFile'
+                'file_info' => 'infoBookFile',
             ])
             ->add('allowedDownload', Type\CheckboxType::class, [
                 'required' => false,
@@ -38,9 +38,9 @@ class BookType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Book'
-        ));
+        $resolver->setDefaults([
+            'data_class' => 'AppBundle\Entity\Book',
+        ]);
     }
 
     /**

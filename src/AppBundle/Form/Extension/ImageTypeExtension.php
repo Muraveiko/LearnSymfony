@@ -28,7 +28,7 @@ class ImageTypeExtension extends AbstractTypeExtension
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefined(array('image_path','file_info'));
+        $resolver->setDefined(['image_path','file_info']);
     }
 
     /**

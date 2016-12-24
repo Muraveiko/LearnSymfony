@@ -7,7 +7,7 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 
 /**
  * Class CacheBooksSubscriber
- * @package AppBundle\EventListener
+ * актулизация кеша списка книг
  */
 class CacheBooksSubscriber implements EventSubscriber
 {
@@ -18,9 +18,9 @@ class CacheBooksSubscriber implements EventSubscriber
      */
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             'onFlush',
-        );
+        ];
     }
 
     /**

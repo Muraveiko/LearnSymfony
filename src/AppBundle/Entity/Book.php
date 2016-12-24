@@ -335,10 +335,10 @@ class Book implements ContainerAwareInterface
         }
         if (null === self::$uploadDirs) {
 
-            self::$uploadDirs = array(
+            self::$uploadDirs = [
                 'image' => $this->container->getParameter('book_image_directory'),
                 'file' => $this->container->getParameter('book_file_directory'),
-            );
+            ];
         }
 
         $dir = self::$uploadDirs[$type] . mb_substr($filename, 0, 2);

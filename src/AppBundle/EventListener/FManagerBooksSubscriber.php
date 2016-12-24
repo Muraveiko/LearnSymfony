@@ -19,10 +19,10 @@ class FManagerBooksSubscriber implements EventSubscriber
      */
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             'preUpdate',
-            'preRemove'
-        );
+            'preRemove',
+        ];
     }
 
     /**

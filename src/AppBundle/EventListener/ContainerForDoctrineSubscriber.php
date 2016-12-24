@@ -13,7 +13,6 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
  *
  *  Внедряет в сущности возможность доступа к компонентам симфони
  *
- * @package AppBundle\EventListener
  */
 class ContainerForDoctrineSubscriber implements EventSubscriber, ContainerAwareInterface
 {

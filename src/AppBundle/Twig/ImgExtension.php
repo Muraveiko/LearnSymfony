@@ -22,12 +22,12 @@ class ImgExtension extends \Twig_Extension
      * @param array $args
      * @return string - html code
      */
-    public function buildImage($src, array $args = array())
+    public function buildImage($src, array $args = [])
     {
         $args = array_merge(
             [
                'width' => null,
-               'height' => null
+               'height' => null,
             ], $args
         );
 

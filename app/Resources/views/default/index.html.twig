@@ -14,7 +14,7 @@
             <h2>{{ book.name }}</h2>
             <h3>{{ book.author }}</h3>
             {% if book.cover|length > 0 %}
-            <p><img src="{{ path('_book_cover',{ 'image': book.cover , 'subdir': book.getCoverSubDir} ) }}" /></p>
+            <p>{{ my_img(path('_book_cover',{ 'image': book.cover , 'subdir': book.getCoverSubDir} ),{width:'240px',height:'320px'}) }}</p>
             {% endif %}
             {{ book.dateRead|localizeddate('medium', 'none') }}
             <p>

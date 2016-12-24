@@ -8,6 +8,12 @@ services:
         tags:
             - { name: twig.extension }
 
+    app.twig.img_extension:
+        public:    false
+        class:     AppBundle\Twig\ImgExtension
+        tags:
+            - { name: twig.extension }
+
     app.twig.intl_extension:
         public: false
         class:  Twig_Extensions_Extension_Intl

@@ -457,7 +457,6 @@ class Book implements ContainerAwareInterface
     {
         if (null === $cover) return;
         $file = $this->getPathCover($cover);
-        $this->cover = null;
         @unlink($file);
         return;
     }
@@ -481,7 +480,6 @@ class Book implements ContainerAwareInterface
     {
         if (null === $bookFile) return;
         $file = $this->getPathBookFile($bookFile);
-        $this->bookFile = null;
         @unlink($file);
         return;
     }

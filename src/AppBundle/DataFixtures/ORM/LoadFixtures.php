@@ -55,10 +55,8 @@ class LoadFixtures implements FixtureInterface, ContainerAwareInterface
 
             $book->setName($this->getRandomName());
             $book->setAuthor($this->getRandomAuthor());
-            $book->setCover('');
-            $book->setFilename('');
-            $book->setAllowedDownload(FALSE);
             $book->setDateRead(new \DateTime('now - '.$i.'days'));
+            $book->setAllowedDownload(false);
 
             $manager->persist($book);
         }

@@ -16,10 +16,20 @@ class BookType extends AbstractType
     {
         $builder->add('name')
             ->add('author')
-            ->add('uploadCover',Type\FileType::class, array('image_path'=>'getCoverUrl'))
-            ->add('uploadBookFile',Type\FileType::class)
+            ->add('uploadCover',Type\FileType::class, array(
+                'required' => false,
+                'image_path'=>'getCoverUrl',
+                'file_info' =>'infoCover'
+            ))
+            ->add('uploadBookFile',Type\FileType::class,array(
+                'required' => false,
+                'file_info' =>'infoBookFile'
+            ))
+            ->add('allowedDownload',Type\CheckboxType::class,array(
+                'required' => false,
+            ))
             ->add('dateRead')
-            ->add('allowedDownload',Type\CheckboxType::class);
+            ;
     }
     
     /**

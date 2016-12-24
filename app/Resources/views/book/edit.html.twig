@@ -15,12 +15,12 @@
     {{ form_row(edit_form.author) }}
     {{ form_row(edit_form.uploadCover) }}
     {{ form_row(edit_form.uploadBookFile) }}
-    {{ form_row(edit_form.dateRead) }}
     {{ form_row(edit_form.allowedDownload) }}
+    {{ form_row(edit_form.dateRead) }}
 
     <div class="clearfix">
-        <input type="submit" value="label.save" class="btn btn-success"/>
-        <button class="btn btn-danger" onclick="$('form[name^=delete_form]').submit();return false;">label.delete</button>
+        <input type="submit" value="{{ 'label.save'|trans }}" class="btn btn-success"/>
+        <button class="btn btn-danger" onclick="$('form[name^=delete_form]').submit();return false;">{% trans %}label.delete{% endtrans %}</button>
     </div>
     {{ form_end(edit_form) }}
 {% endblock %}

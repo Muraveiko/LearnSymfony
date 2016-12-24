@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Instantiator\Exception\UnexpectedValueException;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -50,7 +51,7 @@ class Book implements ContainerAwareInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="cover", type="string", length=128)
+     * @ORM\Column(name="cover", type="string", length=128, nullable=true)
      */
     private $cover;
 
@@ -61,13 +62,6 @@ class Book implements ContainerAwareInterface
      */
     private $uploadCover;
 
-
-    public function __construct($container=null)
-    {
-        if($container instanceof ContainerInterface ) {
-            $this->container = $container;
-        }
-    }
 
     /**
      * @return mixed
@@ -136,7 +130,7 @@ class Book implements ContainerAwareInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="filename", type="string", length=255)
+     * @ORM\Column(name="filename", type="string", length=255, nullable=true)
      */
     private $bookFile;
 
@@ -335,7 +329,12 @@ class Book implements ContainerAwareInterface
         }
 
         $dir = self::$uploadDirs[$type] . mb_substr($filename, 0, 2);
-        @mkdir($dir, 0755);
+        if ( ! is_dir($dir) && (false === @mkdir($dir, 0775, true))) {
+            throw new \Exception('directory not writable');
+        }
+        if ( ! is_writable($dir)) {
+            throw new \Exception('directory not writable');
+        }
 
         return $dir;
 
@@ -355,11 +354,11 @@ class Book implements ContainerAwareInterface
 
     public function upload()
     {
-        $this->uploadBook();
+        $this->uploadBookFile();
         $this->uploadCover();
     }
 
-    public function uploadBook()
+    public function uploadBookFile()
     {
         /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
         $file = $this->getUploadBookFile();
@@ -401,12 +400,40 @@ class Book implements ContainerAwareInterface
         $this->uploadCover = null;
     }
 
-    /**
-     * @ORM\PostRemove()
-     */
     public function removeUpload()
     {
+        $this->removeBookFile();
+        $this->removeCover();
+    }
 
+    public function getPathCover($cover = null)
+    {
+        if(null === $cover) $cover = $this->cover;
+        if(null === $cover) return null;
+        return $this->getUploadDir($cover,'image').DIRECTORY_SEPARATOR.$cover;
+    }
+
+    public function removeCover($cover = null)
+    {
+        if(null === $cover) $cover = $this->cover;
+        if(null === $cover) return null;
+        $file = $this->getPathCover($cover);
+        @unlink($file);
+    }
+
+    public function getPathBookFile($bookFile = null)
+    {
+        if(null === $bookFile) $bookFile = $this->bookFile;
+        if(null === $bookFile) return null;
+        return $this->getUploadDir($bookFile,'file').DIRECTORY_SEPARATOR.$bookFile;
+    }
+
+    public function removeBookFile($bookFile = null)
+    {
+        if(null === $bookFile) $bookFile = $this->bookFile;
+        if(null === $bookFile) return null;
+        $file = $this->getPathBookFile($bookFile);
+        @unlink($file);
     }
 
 
@@ -415,5 +442,20 @@ class Book implements ContainerAwareInterface
         if(null === $this->cover) return null;
         return $this->container->get('router')->generate('_book_cover',['image'=>$this->cover,'subdir'=>$this->getCoverSubDir()]);
     }
+
+    public function infoCover()
+    {
+        if(null === $this->cover) return null;
+        $file = $this->getUploadDir($this->cover,'image').DIRECTORY_SEPARATOR.$this->cover;
+        return ' '.$this->cover.' ('.@filesize($file).' bytes) ';
+    }
+
+    public function infoBookFile()
+    {
+        if(null === $this->bookFile) return null;
+        $file = $this->getUploadDir($this->bookFile,'file').DIRECTORY_SEPARATOR.$this->bookFile;
+        return ' '.$this->bookFile.' ('.@filesize($file).' bytes) ';
+    }
+
 }
 

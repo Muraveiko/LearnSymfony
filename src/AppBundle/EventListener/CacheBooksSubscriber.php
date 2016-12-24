@@ -8,10 +8,9 @@
 
 namespace AppBundle\EventListener;
 
-use AppBundle\Entity\Book;
+use AppBundle\Repository\BookRepository;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\OnFlushEventArgs;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 
 class CacheBooksSubscriber implements EventSubscriber
 {
@@ -26,7 +25,7 @@ class CacheBooksSubscriber implements EventSubscriber
 
     public function onFlush(OnFlushEventArgs $args)
     {
-            $args->getEntityManager()->getConfiguration()->getResultCacheImpl()->delete('book_get_list');
+        $args->getEntityManager()->getConfiguration()->getResultCacheImpl()->delete('book_get_list');
     }
 
 }

@@ -42,17 +42,26 @@ class ImageTypeExtension extends AbstractTypeExtension
     {
         $view->vars['image_url'] = null;
         $view->vars['file_info'] = null;
+
+        $parentData = $form->getParent()->getData();
+        $accessor = PropertyAccess::createPropertyAccessor();
+
         if (isset($options['image_path'])) {
-            $parentData = $form->getParent()->getData();
 
             $imageUrl = null;
             if (null !== $parentData) {
-                $accessor = PropertyAccess::createPropertyAccessor();
                 $imageUrl = $accessor->getValue($parentData, $options['image_path']);
             }
-
-            // set an "image_url" variable that will be available when rendering this field
             $view->vars['image_url'] = $imageUrl;
+        }
+
+        if (isset($options['file_info'])) {
+
+            $fileInfo = null;
+            if (null !== $parentData) {
+                $fileInfo = $accessor->getValue($parentData, $options['file_info']);
+            }
+            $view->vars['file_info'] = $fileInfo;
         }
     }
 }

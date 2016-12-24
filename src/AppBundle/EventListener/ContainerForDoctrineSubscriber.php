@@ -7,7 +7,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
-class UtilBooksSubcriber implements EventSubscriber,ContainerAwareInterface
+
+/**
+ * Class ContainerForDoctrineSubscriber
+ *
+ *  Внедряет в сущности возможность доступа к компонентам симфони
+ *
+ * @package AppBundle\EventListener
+ */
+ class ContainerForDoctrineSubscriber implements EventSubscriber,ContainerAwareInterface
 {
     /** @var ContainerInterface */
     private $container;
@@ -26,16 +34,21 @@ class UtilBooksSubcriber implements EventSubscriber,ContainerAwareInterface
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->logger = $this->container->get('logger');
-        $this->logger->debug('UtilBooksSubcriber constuct !');
     }
 
     public function getSubscribedEvents()
     {
-        return ['prePersist','postLoad'];
+        return ['postLoad'];
     }
 
+     /**
+      * @param LifecycleEventArgs $args
+      * После создания объекта в ручную вызовете SetContainer или persist нужно звать сразу после конструктора
+      */
     public function prePersist(LifecycleEventArgs $args) {
+        if( 1 == 1 ) { // заглушено
+            throw new \Exception('читайте примечание ');
+        }
         $this->fixContainer($args);
     }
 
@@ -44,11 +57,9 @@ class UtilBooksSubcriber implements EventSubscriber,ContainerAwareInterface
     }
 
     public function fixContainer(LifecycleEventArgs $args){
-        $this->logger->debug('fixContainer call');
         $entity = $args->getEntity();
 
         if($entity instanceof ContainerAwareInterface) {
-            $this->logger->debug('fixContainer set');
             $entity->setContainer($this->container);
         }
 

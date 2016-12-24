@@ -11,11 +11,11 @@
     {{ form_row(form.author) }}
     {{ form_row(form.uploadCover) }}
     {{ form_row(form.uploadBookFile) }}
-    {{ form_row(form.dateRead) }}
     {{ form_row(form.allowedDownload) }}
+    {{ form_row(form.dateRead) }}
 
     <div class="clearfix">
-        <input type="submit" value="label.save" class="btn btn-success"/>
+        <input type="submit" value="{{ 'label.save'|trans }}" class="btn btn-success"/>
     </div>
     {{ form_end(form) }}
 

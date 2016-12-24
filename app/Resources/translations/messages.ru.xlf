@@ -325,13 +325,40 @@
                 <source>help.more_information</source>
                 <target><![CDATA[Для дополнительной информации обратитесь к <a href="http://symfony.com/doc">Symfony документации</a>.]]></target>
             </trans-unit>
-            <trans-unit id="Download (PDF,EPUB,RTF,TXT)">
-                <source>Download (PDF,EPUB,RTF,TXT)</source>
+            <trans-unit id="Upload book file">
+                <source>Upload book file</source>
                 <target>Файл для скачивания (PDF,EPUB,RTF,TXT)</target>
             </trans-unit>
-            <trans-unit id="Cover image (JPG,PNG)">
-                <source>Cover image (JPG,PNG)</source>
+            <trans-unit id="Upload cover">
+                <source>Upload cover</source>
                 <target>Обложка (JPG,PNG)</target>
+            </trans-unit>
+
+            <trans-unit id="Name">
+                <source>Name</source>
+                <target>Название</target>
+            </trans-unit>
+            <trans-unit id="Author">
+                <source>Author</source>
+                <target>Автор</target>
+            </trans-unit>
+            <trans-unit id="Date read">
+                <source>Date read</source>
+                <target>Прочел</target>
+            </trans-unit>
+            <trans-unit id="Allowed download">
+                <source>Allowed download</source>
+                <target>Посетители могут скачивать</target>
+            </trans-unit>
+
+
+            <trans-unit id="label.save">
+                <source>label.save</source>
+                <target>Сохранить</target>
+            </trans-unit>
+            <trans-unit id="label.delete">
+                <source>label.delete</source>
+                <target>Удалить</target>
             </trans-unit>
 
         </body>

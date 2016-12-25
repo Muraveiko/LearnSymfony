@@ -114,6 +114,7 @@ class Book implements ContainerAwareInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_read", type="date")
+     * @Assert\Date()
      *
      * @Serialization\Expose
      * @Serialization\Groups({"book_details", "book_list"})

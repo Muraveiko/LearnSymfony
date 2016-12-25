@@ -29,6 +29,7 @@ class BookType extends AbstractType
                 'required' => false,
             ])
             ->add('dateRead', Type\DateType::class, [
+                'required' => true,
             ]);
 
     }
@@ -48,7 +49,15 @@ class BookType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'appbundle_book';
+        return '';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'book_form';
     }
 
 }

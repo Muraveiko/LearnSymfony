@@ -5,7 +5,7 @@
 {% block main %}
     <h1>Добавление новой книги</h1>
     {% form_theme form 'bootstrap_3_layout.html.twig' %}
-    {{ form_start(form) }}
+    {{ form_start(form, {name:'add_form'}) }}
 
     {{ form_row(form.name) }}
     {{ form_row(form.author) }}

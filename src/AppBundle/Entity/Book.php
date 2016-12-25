@@ -36,7 +36,7 @@ class Book implements ContainerAwareInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      *
      * @Serialization\Expose
-     * @Serialization\Groups({"details", "list"})
+     * @Serialization\Groups({"book_details", "book_list"})
      */
     private $id;
 
@@ -52,7 +52,8 @@ class Book implements ContainerAwareInterface
      * )
      *
      * @Serialization\Expose
-     * @Serialization\Groups({"details", "list"})
+     * @Serialization\Groups({"book_details", "book_list"})
+     * @Serialization\SerializedName("book_name")
      */
     private $name;
 
@@ -68,7 +69,7 @@ class Book implements ContainerAwareInterface
      * )
      *
      * @Serialization\Expose
-     * @Serialization\Groups({"details", "list"})
+     * @Serialization\Groups({"book_details", "book_list"})
      */
     private $author;
 
@@ -115,7 +116,7 @@ class Book implements ContainerAwareInterface
      * @ORM\Column(name="date_read", type="date")
      *
      * @Serialization\Expose
-     * @Serialization\Groups({"details", "list"})
+     * @Serialization\Groups({"book_details", "book_list"})
      * @Serialization\Type("DateTime<'Y-m-d'>")
      */
     private $dateRead;
@@ -126,7 +127,7 @@ class Book implements ContainerAwareInterface
      * @ORM\Column(name="allowed_download", type="boolean")
      *
      * @Serialization\Expose
-     * @Serialization\Groups({"details", "list"})
+     * @Serialization\Groups({"book_details", "book_list"})
      */
     private $allowedDownload;
 
@@ -506,7 +507,7 @@ class Book implements ContainerAwareInterface
 
     /**
      * @Serialization\VirtualProperty
-     * @Serialization\Groups({"list"})
+     * @Serialization\Groups({"book_list"})
      *
      * @return null|string
      */
@@ -518,7 +519,7 @@ class Book implements ContainerAwareInterface
 
     /**
      * @Serialization\VirtualProperty
-     * @Serialization\Groups({"list"})
+     * @Serialization\Groups({"book_list"})
      *
      * @return null|string
      */

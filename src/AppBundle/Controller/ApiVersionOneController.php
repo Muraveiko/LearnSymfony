@@ -46,10 +46,8 @@ class ApiVersionOneController extends Controller
      *
      * @View(serializerGroups={"book_details"})
      */
-    public function detailsAction($id)
+    public function detailsAction(Book $entity)
     {
-        $entity = $this->getDoctrine()->getRepository('AppBundle:Book')->find($id);
-
         return $entity;
     }
 

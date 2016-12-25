@@ -7,7 +7,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
+use JMS\Serializer\Annotation as Serialization;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Book
@@ -15,6 +16,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @ORM\Table(name="book",indexes={@ORM\Index(name="date_read_idx", columns={"date_read"})})
  * @ORM\Entity(repositoryClass="AppBundle\Repository\BookRepository")
  * @ORM\HasLifecycleCallbacks
+ *
+ * @Serialization\ExclusionPolicy("ALL")
  */
 class Book implements ContainerAwareInterface
 {
@@ -31,6 +34,9 @@ class Book implements ContainerAwareInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @Serialization\Expose
+     * @Serialization\Groups({"details", "list"})
      */
     private $id;
 
@@ -44,6 +50,9 @@ class Book implements ContainerAwareInterface
      *      minMessage = "Name must be at least {{ limit }} characters long",
      *      maxMessage = "Name cannot be longer than {{ limit }} characters"
      * )
+     *
+     * @Serialization\Expose
+     * @Serialization\Groups({"details", "list"})
      */
     private $name;
 
@@ -57,6 +66,9 @@ class Book implements ContainerAwareInterface
      *      minMessage = "Author must be at least {{ limit }} characters long",
      *      maxMessage = "Author cannot be longer than {{ limit }} characters"
      * )
+     *
+     * @Serialization\Expose
+     * @Serialization\Groups({"details", "list"})
      */
     private $author;
 
@@ -102,6 +114,9 @@ class Book implements ContainerAwareInterface
      *
      * @ORM\Column(name="date_read", type="date")
      *
+     * @Serialization\Expose
+     * @Serialization\Groups({"details", "list"})
+     * @Serialization\Type("DateTime<'Y-m-d'>")
      */
     private $dateRead;
 
@@ -109,6 +124,9 @@ class Book implements ContainerAwareInterface
      * @var bool
      *
      * @ORM\Column(name="allowed_download", type="boolean")
+     *
+     * @Serialization\Expose
+     * @Serialization\Groups({"details", "list"})
      */
     private $allowedDownload;
 
@@ -441,16 +459,6 @@ class Book implements ContainerAwareInterface
 
     /**
      * @param null $cover
-     * @return null|string
-     */
-    public function getPathCover($cover = null)
-    {
-        if (null === $cover) return null;
-        return $this->getUploadDir($cover, 'image') . DIRECTORY_SEPARATOR . $cover;
-    }
-
-    /**
-     * @param null $cover
      * @return void
      */
     public function removeCover($cover = null)
@@ -459,6 +467,28 @@ class Book implements ContainerAwareInterface
         $file = $this->getPathCover($cover);
         @unlink($file);
         return;
+    }
+    /**
+     * @param null $bookFile
+     * @return void
+     */
+    public function removeBookFile($bookFile = null)
+    {
+        if (null === $bookFile) return;
+        $file = $this->getPathBookFile($bookFile);
+        @unlink($file);
+        return;
+    }
+
+    /**
+     * @param null $cover
+     * @return null|string
+     */
+    public function getPathCover($cover = null)
+    {
+        if (null === $cover) $cover = $this->cover;
+        if (null === $cover) return null;
+        return $this->getUploadDir($cover, 'image') . DIRECTORY_SEPARATOR . $cover;
     }
 
     /**
@@ -472,27 +502,33 @@ class Book implements ContainerAwareInterface
         return $this->getUploadDir($bookFile, 'file') . DIRECTORY_SEPARATOR . $bookFile;
     }
 
-    /**
-     * @param null $bookFile
-     * @return void
-     */
-    public function removeBookFile($bookFile = null)
-    {
-        if (null === $bookFile) return;
-        $file = $this->getPathBookFile($bookFile);
-        @unlink($file);
-        return;
-    }
 
 
     /**
+     * @Serialization\VirtualProperty
+     * @Serialization\Groups({"list"})
+     *
      * @return null|string
      */
-    public function getcoverUrl()
+    public function getCoverUrl()
     {
         if (null === $this->cover) return null;
-        return $this->container->get('router')->generate('_book_cover', ['image' => $this->cover, 'subdir' => $this->getCoverSubDir()]);
+        return $this->container->get('router')->generate('_book_cover', ['image' => $this->cover, 'subdir' => $this->getCoverSubDir()],UrlGeneratorInterface::ABSOLUTE_URL);
     }
+
+    /**
+     * @Serialization\VirtualProperty
+     * @Serialization\Groups({"list"})
+     *
+     * @return null|string
+     */
+    public function getBookUrl()
+    {
+        if (null === $this->bookFile) return null;
+        if (false === $this->allowedDownload) return null;
+        return $this->container->get('router')->generate('book_download', ['id' => $this->id],UrlGeneratorInterface::ABSOLUTE_URL);
+    }
+
 
     /**
      * @return null|string

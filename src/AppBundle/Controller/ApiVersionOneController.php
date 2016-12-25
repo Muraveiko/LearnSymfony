@@ -2,6 +2,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Book;
+use FOS\RestBundle\Controller\Annotations\View;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use JMS\Serializer as JMS;
@@ -19,18 +20,14 @@ class ApiVersionOneController extends Controller
      *  пришлось описывать так, в задании нет слеша в конце
      *  в .htaccess нужно добавить
      *  DirectorySlash off
+     *
+     * @View(serializerGroups={"book_list"})
      */
     public function listAction()
     {
+       $books = $this->getDoctrine()->getRepository('AppBundle:Book')->getList();
 
-        $books = $this->getDoctrine()->getRepository('AppBundle:Book')->getList();
-
-        $serializer = JMS\SerializerBuilder::create()->build();
-        $serialized = $serializer->serialize($books, 'json', JMS\SerializationContext::create()->setGroups(array('book_list')));
-
-        $response = new JsonResponse($serialized, 200, [], true);
-
-        return $response;
+        return $books;
     }
 
     /**
@@ -46,15 +43,14 @@ class ApiVersionOneController extends Controller
 
     /**
      * @Route("/books/{id}", requirements={"id": "\d+"})
+     *
+     * @View(serializerGroups={"book_details"})
      */
     public function detailsAction($id)
     {
         $entity = $this->getDoctrine()->getRepository('AppBundle:Book')->find($id);
 
-        $serializer = JMS\SerializerBuilder::create()->build();
-        $serialized = $serializer->serialize($entity, 'json', JMS\SerializationContext::create()->setGroups(array('book_details')));
-
-        return new JsonResponse($serialized, 200, [], true);
+        return $entity;
     }
 
     /**

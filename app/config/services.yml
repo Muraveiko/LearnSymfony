@@ -40,4 +40,10 @@ services:
         tags:
             - { name: doctrine.event_subscriber, connection: default }
 
+    # Демо пример идентификации пользователя по ключу АПИ. Переписать метод getUsernameForApiKey()
+    api_key_user_provider:
+        class: AppBundle\Security\ApiKeyUserProvider
 
+    apikey_authenticator:
+        class:  AppBundle\Security\ApiKeyAuthenticator
+        public: false
